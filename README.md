@@ -18,3 +18,10 @@ Copy settings.example.php from vendor/klausi/github_drupalorg and provide the co
   vim settings.php
 ```
 
+## Usage
+
+Upload the files your-patch.patch and your-interdiff.txt to drupal.org/node/123123
+
+```
+  drush pp #123123 your-patch.patch your-interdiff.txt
+```
