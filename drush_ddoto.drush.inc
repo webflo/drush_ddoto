@@ -74,7 +74,7 @@ function drush_drush_ddoto_post_comment($nid) {
 
     $filepath = array();
     foreach ($files as $file) {
-       $filepath[] = drush_cwd() . '/'. $file;
+       $filepath[] = drush_is_absolute_path($file) ? $file : drush_cwd() . '/'. $file;
     }
 
     $nid = _drush_ddoto_extract_issue_id($nid);
