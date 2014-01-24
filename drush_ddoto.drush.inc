@@ -69,7 +69,8 @@ function drush_drush_ddoto_post_comment($nid) {
       return FALSE;
     }
 
-    require_once __DIR__ . '/github_drupalorg/utility.php';
+    require_once __DIR__ . '/vendor/autoload.php';
+    require_once __DIR__ . '/vendor/klausi/github_drupalorg/utility.php';
 
     $filepath = array();
     foreach ($files as $file) {

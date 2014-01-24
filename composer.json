@@ -1,0 +1,26 @@
+{
+    "name": "webflo/drush_ddoto",
+    "authors": [
+        {
+            "name": "Florian Weber",
+            "email": "florian.weber@ueberbit.de"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "klausi/github_drupalorg",
+                "version": "dev-master",
+                "source": {
+                  "type": "git",
+                  "url": "https://github.com/webflo/github_drupalorg.git",
+                  "reference": "multiple-file-upload"
+                }
+            }
+        }
+    ],
+    "require": {
+        "klausi/github_drupalorg": "dev-master"
+    }
+}
