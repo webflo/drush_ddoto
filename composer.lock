@@ -13,8 +13,7 @@
                 "url": "https://github.com/webflo/github_drupalorg.git",
                 "reference": "drush_ddoto"
             },
-            "type": "library",
-            "time": "2014-01-25 09:37:58"
+            "type": "library"
         }
     ],
     "packages-dev": [

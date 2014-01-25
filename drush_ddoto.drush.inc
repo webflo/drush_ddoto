@@ -3,6 +3,9 @@
 global $drupal_user;
 global $drupal_password;
 
+use \Drupal\github_drupalorg\IssueStatus;
+
+require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/settings.php';
 
 /**
@@ -58,9 +61,8 @@ function drush_drush_ddoto_post_comment_validate($nid) {
  *
  */
 function drush_drush_ddoto_post_comment($nid) {
-  require_once __DIR__ . '/vendor/autoload.php';
-  require_once __DIR__ . '/vendor/klausi/github_drupalorg/utility.php';
-
+  $issue_status = new IssueStatus();
+  $issue_status_definition = $issue_status->getDefinition();
   $nid = _drush_ddoto_extract_issue_id($nid);
   $files = func_get_args();
   array_shift($files);
@@ -68,18 +70,21 @@ function drush_drush_ddoto_post_comment($nid) {
   // Setup tags.
   $form = github_drupalorg_get_form($nid);
   $tags = $form['taxonomy_vocabulary_9[und]']->getValue();
+  $status = $form['field_issue_status[und]']->getValue();
+  $status_label = isset($issue_status_definition[$status]) ? $issue_status_definition[$status]['label'] : $issue_status;
+
   $issue_settings = array();
   $issue_settings['tags'] = $tags;
+  $issue_settings['status'] = $status_label;
 
   // Create tmp file
   $filepath = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files, $issue_settings));
 
   $exec = drush_get_editor();
-  $status = drush_shell_exec_interactive($exec, $filepath);
-  if ($status) {
+  $hshell = drush_shell_exec_interactive($exec, $filepath);
+  if ($hshell) {
     $content = file_get_contents($filepath);
     $file_info = _drush_ddoto_parse_file($content);
-
     $content = _drush_ddoto_valid_lines($content);
 
     if (empty($content)) {
@@ -94,11 +99,11 @@ function drush_drush_ddoto_post_comment($nid) {
 
     // Extract the issue settings.
     $issue_settings = array();
-    if ($issue_status = drush_get_option('issue-status')) {
-      $issue_settings['status'] = $issue_status;
-    }
     if (isset($file_info['tags'])) {
       $issue_settings['tags'] = $file_info['tags'];
+    }
+    if (isset($file_info['status'])) {
+      $issue_settings['status'] = $file_info['status'];
     }
 
     post_comment($nid, $content, $filepath, $issue_settings);
@@ -118,7 +123,16 @@ function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
   $output[] = '# Attached files';
 
   foreach ($files as $filename) {
-    $output[] = '# - ' . $filename;
+    $output[] = '#  - ' . $filename;
+  }
+
+  $output[] = '#';
+
+  if (isset($issue_settings['status'])) {
+    $output[] = '# Status: ' . $issue_settings['status'];
+    foreach (IssueStatus::getDefinition() as $definition) {
+      $output[] = '#  - ' . $definition['label'] . ' - ' . implode(', ', $definition['aliases']);
+    }
   }
 
   if (isset($issue_settings['tags'])) {
@@ -149,7 +163,15 @@ function _drush_ddoto_parse_file($content) {
     if (strpos($line, '# Tags:') === 0) {
       $file_info['tags'] = trim(str_replace('# Tags: ', '', $line));
     }
+    if (strpos($line, '# Status:') === 0) {
+      $status = trim(str_replace('# Status: ', '', $line));
+
+      // Convert status value to integer.
+      $issue_status = IssueStatus::toInteger($status);
+      $file_info['status'] = $issue_status ? $issue_status : NULL;
+    }
   }
 
   return $file_info;
 }
+

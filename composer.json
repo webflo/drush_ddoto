@@ -22,5 +22,11 @@
     ],
     "require": {
         "klausi/github_drupalorg": "dev-master"
+    },
+    "autoload": {
+      "files": [
+        "vendor/klausi/github_drupalorg/vendor/autoload.php",
+        "vendor/klausi/github_drupalorg/utility.php"
+      ]
     }
 }
