@@ -58,25 +58,33 @@ function drush_drush_ddoto_post_comment_validate($nid) {
  *
  */
 function drush_drush_ddoto_post_comment($nid) {
+  require_once __DIR__ . '/vendor/autoload.php';
+  require_once __DIR__ . '/vendor/klausi/github_drupalorg/utility.php';
+
   $files = func_get_args();
   array_shift($files);
 
+  // Setup tags.
+  $form = github_drupalorg_get_form($nid);
+  $tags = $form['taxonomy_vocabulary_9[und]']->getValue();
+  $issue_settings = array();
+  $issue_settings['tags'] = $tags;
+
   // Create tmp file
-  $filepath = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files));
+  $filepath = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files, $issue_settings));
 
   $exec = drush_get_editor();
   $status = drush_shell_exec_interactive($exec, $filepath);
   if ($status) {
     $content = file_get_contents($filepath);
+    $file_info = _drush_ddoto_parse_file($content);
+
     $content = _drush_ddoto_valid_lines($content);
 
     if (empty($content)) {
       drush_user_abort();
       return FALSE;
     }
-
-    require_once __DIR__ . '/vendor/autoload.php';
-    require_once __DIR__ . '/vendor/klausi/github_drupalorg/utility.php';
 
     $filepath = array();
     foreach ($files as $file) {
@@ -90,7 +98,9 @@ function drush_drush_ddoto_post_comment($nid) {
     if ($issue_status = drush_get_option('issue-status')) {
       $issue_settings['status'] = $issue_status;
     }
-
+    if (isset($file_info['tags'])) {
+      $issue_settings['tags'] = $file_info['tags'];
+    }
 
     post_comment($nid, $content, $filepath, $issue_settings);
   }
@@ -98,7 +108,7 @@ function drush_drush_ddoto_post_comment($nid) {
 
 
 
-function  _drush_ddoto_file_template($nid, $files) {
+function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
   $output[] = '
 
 ';
@@ -110,6 +120,10 @@ function  _drush_ddoto_file_template($nid, $files) {
 
   foreach ($files as $filename) {
     $output[] = '# - ' . $filename;
+  }
+
+  if (isset($issue_settings['tags'])) {
+    $output[] = '# Tags: ' . $issue_settings['tags'];
   }
 
   $output[] = '#';
@@ -125,4 +139,18 @@ function _drush_ddoto_valid_lines($content) {
     return $value[0] != '#';
   });
   return implode("\n", $lines);
+}
+
+/**
+ * Parse the information stored in the ddoto file template.
+ */
+function _drush_ddoto_parse_file($content) {
+  $file_info = array();
+  foreach (explode(PHP_EOL, $content) as $line) {
+    if (strpos($line, '# Tags:') === 0) {
+      $file_info['tags'] = trim(str_replace('# Tags: ', '', $line));
+    }
+  }
+
+  return $file_info;
 }
