@@ -61,6 +61,7 @@ function drush_drush_ddoto_post_comment($nid) {
   require_once __DIR__ . '/vendor/autoload.php';
   require_once __DIR__ . '/vendor/klausi/github_drupalorg/utility.php';
 
+  $nid = _drush_ddoto_extract_issue_id($nid);
   $files = func_get_args();
   array_shift($files);
 
@@ -91,8 +92,6 @@ function drush_drush_ddoto_post_comment($nid) {
        $filepath[] = drush_is_absolute_path($file) ? $file : drush_cwd() . '/'. $file;
     }
 
-    $nid = _drush_ddoto_extract_issue_id($nid);
-
     // Extract the issue settings.
     $issue_settings = array();
     if ($issue_status = drush_get_option('issue-status')) {
@@ -114,7 +113,7 @@ function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
 ';
 
   $output[] = '#########################';
-  $output[] = '# Post patch to issues nr. ' . $nid;
+  $output[] = '# Post patch to issues nr. #' . $nid;
   $output[] = '#';
   $output[] = '# Attached files';
 
