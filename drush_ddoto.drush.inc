@@ -11,6 +11,12 @@ require_once __DIR__ . '/settings.php';
 function drush_ddoto_drush_command() {
   $items['post-comment'] = array(
     'description' => 'Post comment on drupal.org',
+    'options' => array(
+      'issue-status' => array(
+        'description' => 'Sets the issue status, like needs review (8), needs RTBC (14)',
+        'example-value' => '14',
+      ),
+    ),
     'arguments' => array(
       'nid' => 'Drupal.org Node id',
     ),
@@ -78,7 +84,15 @@ function drush_drush_ddoto_post_comment($nid) {
     }
 
     $nid = _drush_ddoto_extract_issue_id($nid);
-    post_comment($nid, $content, $filepath);
+
+    // Extract the issue settings.
+    $issue_settings = array();
+    if ($issue_status = drush_get_option('issue-status')) {
+      $issue_settings['status'] = $issue_status;
+    }
+
+
+    post_comment($nid, $content, $filepath, $issue_settings);
   }
 }
 
