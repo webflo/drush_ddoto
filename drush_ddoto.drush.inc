@@ -50,7 +50,7 @@ function _drush_ddoto_extract_issue_id($nid) {
  *
  * @param $nid
  */
-function drush_drush_ddoto_post_comment_validate($nid) {
+function drush_drush_ddoto_post_comment_validate($nid = NULL) {
   $nid = _drush_ddoto_extract_issue_id($nid);
   if (!$nid) {
     drush_set_error($nid . ' is no valid drupal.org issue id.');
