@@ -8,24 +8,15 @@
     ],
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "klausi/github_drupalorg",
-                "version": "dev-master",
-                "source": {
-                  "type": "git",
-                  "url": "https://github.com/webflo/github_drupalorg.git",
-                  "reference": "drush_ddoto"
-                }
-            }
+          "type": "vcs",
+          "url": "https://github.com/webflo/github_drupalorg.git"
         }
     ],
     "require": {
-        "klausi/github_drupalorg": "dev-master"
+        "klausi/github_drupalorg": "dev-drush_ddoto"
     },
     "autoload": {
       "files": [
-        "vendor/klausi/github_drupalorg/vendor/autoload.php",
         "vendor/klausi/github_drupalorg/utility.php"
       ]
     }
