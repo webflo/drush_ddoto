@@ -15,7 +15,7 @@
                 "source": {
                   "type": "git",
                   "url": "https://github.com/webflo/github_drupalorg.git",
-                  "reference": "multiple-file-upload"
+                  "reference": "drush_ddoto"
                 }
             }
         }

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fbd73130910d71262aa0446787574bcb",
+    "hash": "d4937aecb14f368e4974c93fe735b28f",
     "packages": [
         {
             "name": "klausi/github_drupalorg",
@@ -11,9 +11,10 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webflo/github_drupalorg.git",
-                "reference": "multiple-file-upload"
+                "reference": "drush_ddoto"
             },
-            "type": "library"
+            "type": "library",
+            "time": "2014-01-25 09:37:58"
         }
     ],
     "packages-dev": [
