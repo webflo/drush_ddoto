@@ -113,9 +113,7 @@ function drush_drush_ddoto_post_comment($nid) {
 
 
 function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
-  $output[] = '
-
-';
+  $output = array('', '');
 
   $output[] = '#########################';
   $output[] = '# Post patch to issues nr. #' . $nid;
