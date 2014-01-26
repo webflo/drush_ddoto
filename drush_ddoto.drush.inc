@@ -15,9 +15,17 @@ function drush_ddoto_drush_command() {
   $items['post-comment'] = array(
     'description' => 'Post comment on drupal.org',
     'options' => array(
-      'issue-status' => array(
+      'issue_status' => array(
+        'short-form' => 'is',
+        'short-has-arg' => TRUE,
         'description' => 'Sets the issue status, like needs review (8), needs RTBC (14)',
         'example-value' => '14',
+      ),
+      'message' => array(
+        'description' => 'The body of the comment.',
+      ),
+      'tags' => array(
+        'description' => 'The tags of the issue.',
       ),
     ),
     'arguments' => array(
@@ -64,8 +72,12 @@ function drush_drush_ddoto_post_comment($nid) {
   $issue_status = new IssueStatus();
   $issue_status_definition = $issue_status->getDefinition();
   $nid = _drush_ddoto_extract_issue_id($nid);
-  $files = func_get_args();
-  array_shift($files);
+  $args = drush_get_arguments();
+  // Drop the command name
+  array_shift($args);
+  // Drop the issue NID
+  array_shift($args);
+  $files = $args;
 
   // Setup tags.
   $form = github_drupalorg_get_form($nid);
@@ -75,40 +87,49 @@ function drush_drush_ddoto_post_comment($nid) {
 
   $issue_settings = array();
   $issue_settings['title'] = $form['title']->getValue();
-  $issue_settings['tags'] = $tags;
-  $issue_settings['status'] = $status_label;
+  $issue_settings['tags'] = drush_get_option('tags', $tags);
+  $issue_settings['status'] = drush_get_option('issue_status', $status_label);
 
-  // Create tmp file
-  $filepath = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files, $issue_settings));
-
-  $exec = drush_get_editor();
-  $hshell = drush_shell_exec_interactive($exec, $filepath);
-  if ($hshell) {
-    $content = file_get_contents($filepath);
-    $file_info = _drush_ddoto_parse_file($content);
-    $content = _drush_ddoto_valid_lines($content);
-
-    if (empty($content)) {
-      drush_user_abort();
-      return FALSE;
-    }
-
-    $filepath = array();
-    foreach ($files as $file) {
-       $filepath[] = drush_is_absolute_path($file) ? $file : drush_cwd() . '/'. $file;
-    }
-
-    // Extract the issue settings.
-    $issue_settings = array();
-    if (isset($file_info['tags'])) {
-      $issue_settings['tags'] = $file_info['tags'];
-    }
-    if (isset($file_info['status'])) {
-      $issue_settings['status'] = $file_info['status'];
-    }
-
-    post_comment($nid, $content, $filepath, $issue_settings);
+  if ($content = drush_get_option('message')) {
+    $issue_settings['content'] = $content;
   }
+  else {
+    // Create tmp file
+    $temp_file = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files, $issue_settings));
+
+    $exec = drush_get_editor();
+    $hshell = drush_shell_exec_interactive($exec, $temp_file);
+    if ($hshell) {
+      $content = file_get_contents($temp_file);
+      $file_info = _drush_ddoto_parse_file($content);
+      $content = _drush_ddoto_valid_lines($content);
+      $issue_settings['content'] = $content;
+
+      if (empty($content)) {
+        drush_user_abort();
+        return FALSE;
+      }
+
+      // Extract the issue settings.
+      $issue_settings = array();
+      if (isset($file_info['tags'])) {
+        $issue_settings['tags'] = $file_info['tags'];
+      }
+      if (isset($file_info['status'])) {
+        $issue_settings['status'] = $file_info['status'];
+      }
+    }
+  }
+
+  $attachments = array();
+  foreach ($files as $file) {
+    $attachments[] = drush_is_absolute_path($file) ? $file : drush_cwd() . '/'. $file;
+  }
+
+  // Convert status value to integer.
+  $issue_settings['status'] = IssueStatus::toInteger($issue_settings['status']);
+
+  post_comment($nid, $content, $attachments, $issue_settings);
 }
 
 
@@ -166,9 +187,7 @@ function _drush_ddoto_parse_file($content) {
     if (strpos($line, '# Status:') === 0) {
       $status = trim(str_replace('# Status: ', '', $line));
 
-      // Convert status value to integer.
-      $issue_status = IssueStatus::toInteger($status);
-      $file_info['status'] = $issue_status ? $issue_status : NULL;
+      $file_info['status'] = $status;
     }
   }
 
