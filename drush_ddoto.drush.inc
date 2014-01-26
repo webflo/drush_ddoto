@@ -35,6 +35,11 @@ function drush_ddoto_drush_command() {
     ),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
+
+  $items['drupal-org-login'] = array(
+    'description' => 'Login-in on Drupal.org with',
+  );
+
   return $items;
 }
 
@@ -64,9 +69,22 @@ function drush_drush_ddoto_post_comment_validate($nid = NULL) {
 }
 
 /**
- *
+ * Perform login on drupal.org
+ */
+function drush_drush_ddoto_drupal_org_login() {
+  global $drupal_user;
+  global $drupal_password;
+  $client = new \Drupal\github_drupalorg\Client($drupal_user);
+  $client->login($drupal_password);
+}
+
+/**
+ * Post comment on drupal.org
  */
 function drush_drush_ddoto_post_comment($nid) {
+  global $drupal_user;
+
+  $client = new \Drupal\github_drupalorg\Client($drupal_user);
   $issue_status = new IssueStatus();
   $issue_status_definition = $issue_status->getDefinition();
   $nid = _drush_ddoto_extract_issue_id($nid);
@@ -78,7 +96,7 @@ function drush_drush_ddoto_post_comment($nid) {
   $files = $args;
 
   // Setup tags.
-  $form = github_drupalorg_get_form($nid);
+  $form = $client->getForm($nid);
   $tags = $form['taxonomy_vocabulary_9[und]']->getValue();
   $status = $form['field_issue_status[und]']->getValue();
   $status_label = isset($issue_status_definition[$status]) ? $issue_status_definition[$status]['label'] : $issue_status;
@@ -127,7 +145,7 @@ function drush_drush_ddoto_post_comment($nid) {
   // Convert status value to integer.
   $issue_settings['status'] = IssueStatus::toInteger($issue_settings['status']);
 
-  post_comment($nid, $content, $attachments, $issue_settings);
+  $client->postComment($nid, $content, $attachments, $issue_settings);
 }
 
 

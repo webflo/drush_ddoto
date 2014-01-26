@@ -207,6 +207,55 @@
             "time": "2013-07-11 22:46:03"
         },
         {
+            "name": "guzzle/plugin-cookie",
+            "version": "v3.7.4",
+            "target-dir": "Guzzle/Plugin/Cookie",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/plugin-cookie.git",
+                "reference": "c247009798e00e1d6bc15345d25f924358c7eda6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/plugin-cookie/zipball/c247009798e00e1d6bc15345d25f924358c7eda6",
+                "reference": "c247009798e00e1d6bc15345d25f924358c7eda6",
+                "shasum": ""
+            },
+            "require": {
+                "guzzle/http": "self.version",
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Guzzle\\Plugin\\Cookie": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle cookie plugin",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "Guzzle",
+                "plugin"
+            ],
+            "time": "2013-07-14 23:24:56"
+        },
+        {
             "name": "guzzle/stream",
             "version": "v3.7.4",
             "target-dir": "Guzzle/Stream",
@@ -265,16 +314,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webflo/github_drupalorg.git",
-                "reference": "0c72c938ef3e47d41f4f1fe55690910b127cbdf8"
+                "reference": "60de66dc62471916fa21fe999d7b72fcf1b4785f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webflo/github_drupalorg/zipball/0c72c938ef3e47d41f4f1fe55690910b127cbdf8",
-                "reference": "0c72c938ef3e47d41f4f1fe55690910b127cbdf8",
+                "url": "https://api.github.com/repos/webflo/github_drupalorg/zipball/60de66dc62471916fa21fe999d7b72fcf1b4785f",
+                "reference": "60de66dc62471916fa21fe999d7b72fcf1b4785f",
                 "shasum": ""
             },
             "require": {
-                "fabpot/goutte": "*"
+                "fabpot/goutte": "*",
+                "guzzle/plugin-cookie": "*",
+                "symfony/event-dispatcher": "*"
             },
             "type": "application",
             "autoload": {
@@ -292,7 +343,7 @@
             "support": {
                 "source": "https://github.com/webflo/github_drupalorg/tree/drush_ddoto"
             },
-            "time": "2014-01-25 18:32:03"
+            "time": "2014-01-26 13:37:36"
         },
         {
             "name": "symfony/browser-kit",
