@@ -74,6 +74,7 @@ function drush_drush_ddoto_post_comment($nid) {
   $status_label = isset($issue_status_definition[$status]) ? $issue_status_definition[$status]['label'] : $issue_status;
 
   $issue_settings = array();
+  $issue_settings['title'] = $form['title']->getValue();
   $issue_settings['tags'] = $tags;
   $issue_settings['status'] = $status_label;
 
@@ -115,18 +116,21 @@ function drush_drush_ddoto_post_comment($nid) {
 function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
   $output = array('', '');
 
-  $output[] = '#########################';
-  $output[] = '# Post patch to issues nr. #' . $nid;
+  $output[] = "# Please enter the comment message for your changes. Lines starting";
+  $output[] = "# with '#' will be ignored, and an empty message aborts the comment.";
   $output[] = '#';
-  $output[] = '# Attached files';
+  $output[] = '# Comment on issue #' . $nid . ': ' . $issue_settings['title'];
 
-  foreach ($files as $filename) {
-    $output[] = '#  - ' . $filename;
+  if (!empty($files)) {
+    $output[] = '#';
+    $output[] = '# Attached files';
+    foreach ($files as $filename) {
+      $output[] = '#  - ' . $filename;
+    }
   }
 
-  $output[] = '#';
-
   if (isset($issue_settings['status'])) {
+    $output[] = '#';
     $output[] = '# Status: ' . $issue_settings['status'];
     foreach (IssueStatus::getDefinition() as $definition) {
       $output[] = '#  - ' . $definition['label'] . ' - ' . implode(', ', $definition['aliases']);
@@ -134,12 +138,10 @@ function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
   }
 
   if (isset($issue_settings['tags'])) {
+    $output[] = '#';
     $output[] = '# Tags: ' . $issue_settings['tags'];
   }
 
-  $output[] = '#';
-  $output[] = '#';
-  $output[] = '# Delete the file content to abort the process.';
 
   return implode("\n", $output);
 }
