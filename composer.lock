@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "99566159de82e93ceda1c8bb65eb38a7",
+    "hash": "6986b0a7ab260c8f5bb3796d691be4ff",
     "packages": [
         {
             "name": "fabpot/goutte",
@@ -314,17 +314,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webflo/github_drupalorg.git",
-                "reference": "ea73f7ded930b5c81e5a332aa1b7c421314bf677"
+                "reference": "28b5929795b170bbc9be632224ec93ddef57909e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webflo/github_drupalorg/zipball/ea73f7ded930b5c81e5a332aa1b7c421314bf677",
-                "reference": "ea73f7ded930b5c81e5a332aa1b7c421314bf677",
+                "url": "https://api.github.com/repos/webflo/github_drupalorg/zipball/28b5929795b170bbc9be632224ec93ddef57909e",
+                "reference": "28b5929795b170bbc9be632224ec93ddef57909e",
                 "shasum": ""
             },
             "require": {
                 "fabpot/goutte": "*",
                 "guzzle/plugin-cookie": "*",
+                "symfony/dom-crawler": "dev-master#4c61df9de058108c4a007975f4962a87a1f9b574",
                 "symfony/event-dispatcher": "*"
             },
             "type": "application",
@@ -343,7 +344,7 @@
             "support": {
                 "source": "https://github.com/webflo/github_drupalorg/tree/drush_ddoto"
             },
-            "time": "2014-01-26 18:51:25"
+            "time": "2014-01-26 19:13:47"
         },
         {
             "name": "symfony/browser-kit",
@@ -453,17 +454,17 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v2.4.1",
+            "version": "dev-master",
             "target-dir": "Symfony/Component/DomCrawler",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/DomCrawler.git",
-                "reference": "58e85928ad277c67102a41a046160de86df44d55"
+                "url": "https://github.com/dawehner/DomCrawler.git",
+                "reference": "4c61df9de058108c4a007975f4962a87a1f9b574"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DomCrawler/zipball/58e85928ad277c67102a41a046160de86df44d55",
-                "reference": "58e85928ad277c67102a41a046160de86df44d55",
+                "url": "https://api.github.com/repos/dawehner/DomCrawler/zipball/4c61df9de058108c4a007975f4962a87a1f9b574",
+                "reference": "4c61df9de058108c4a007975f4962a87a1f9b574",
                 "shasum": ""
             },
             "require": {
@@ -478,7 +479,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -486,7 +487,6 @@
                     "Symfony\\Component\\DomCrawler\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -502,7 +502,10 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "http://symfony.com",
-            "time": "2013-12-29 20:33:52"
+            "support": {
+                "source": "https://github.com/dawehner/DomCrawler/tree/master"
+            },
+            "time": "2014-01-26 18:53:59"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -661,7 +664,8 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "klausi/github_drupalorg": 20
+        "klausi/github_drupalorg": 20,
+        "symfony/dom-crawler": 20
     },
     "platform": [
 

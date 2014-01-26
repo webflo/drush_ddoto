@@ -10,10 +10,15 @@
         {
           "type": "vcs",
           "url": "https://github.com/webflo/github_drupalorg.git"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/dawehner/DomCrawler.git"
         }
     ],
     "require": {
-        "klausi/github_drupalorg": "dev-drush_ddoto"
+        "klausi/github_drupalorg": "dev-drush_ddoto",
+        "symfony/dom-crawler": "dev-master#4c61df9de058108c4a007975f4962a87a1f9b574"
     },
     "autoload": {
       "files": [
