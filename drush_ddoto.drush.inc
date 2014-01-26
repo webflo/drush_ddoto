@@ -16,8 +16,6 @@ function drush_ddoto_drush_command() {
     'description' => 'Post comment on drupal.org',
     'options' => array(
       'issue_status' => array(
-        'short-form' => 'is',
-        'short-has-arg' => TRUE,
         'description' => 'Sets the issue status, like needs review (8), needs RTBC (14)',
         'example-value' => '14',
       ),
