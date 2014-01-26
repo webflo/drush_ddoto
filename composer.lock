@@ -314,12 +314,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webflo/github_drupalorg.git",
-                "reference": "60de66dc62471916fa21fe999d7b72fcf1b4785f"
+                "reference": "ea73f7ded930b5c81e5a332aa1b7c421314bf677"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webflo/github_drupalorg/zipball/60de66dc62471916fa21fe999d7b72fcf1b4785f",
-                "reference": "60de66dc62471916fa21fe999d7b72fcf1b4785f",
+                "url": "https://api.github.com/repos/webflo/github_drupalorg/zipball/ea73f7ded930b5c81e5a332aa1b7c421314bf677",
+                "reference": "ea73f7ded930b5c81e5a332aa1b7c421314bf677",
                 "shasum": ""
             },
             "require": {
@@ -343,7 +343,7 @@
             "support": {
                 "source": "https://github.com/webflo/github_drupalorg/tree/drush_ddoto"
             },
-            "time": "2014-01-26 13:37:36"
+            "time": "2014-01-26 18:51:25"
         },
         {
             "name": "symfony/browser-kit",
