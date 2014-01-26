@@ -3,6 +3,7 @@
 global $drupal_user;
 global $drupal_password;
 
+use Drupal\github_drupalorg\IssuePriority;
 use \Drupal\github_drupalorg\IssueStatus;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -24,6 +25,9 @@ function drush_ddoto_drush_command() {
       ),
       'tags' => array(
         'description' => 'The tags of the issue.',
+      ),
+      'issue_priority' => array(
+        'description' => 'The issue priority',
       ),
     ),
     'arguments' => array(
@@ -85,8 +89,8 @@ function drush_drush_ddoto_post_comment($nid) {
   global $drupal_user;
 
   $client = new \Drupal\github_drupalorg\Client($drupal_user);
-  $issue_status = new IssueStatus();
-  $issue_status_definition = $issue_status->getDefinition();
+  $issue_status_definition = IssueStatus::getDefinition();
+  $issue_priority_definition = IssuePriority::getDefinition();
   $nid = _drush_ddoto_extract_issue_id($nid);
   $args = drush_get_arguments();
   // Drop the command name
@@ -99,12 +103,15 @@ function drush_drush_ddoto_post_comment($nid) {
   $form = $client->getForm($nid);
   $tags = $form['taxonomy_vocabulary_9[und]']->getValue();
   $status = $form['field_issue_status[und]']->getValue();
-  $status_label = isset($issue_status_definition[$status]) ? $issue_status_definition[$status]['label'] : $issue_status;
+  $status_label = isset($issue_status_definition[$status]) ? $issue_status_definition[$status]['label'] : $status;
+  $priority = $form['field_issue_priority[und]']->getValue();
+  $priority_label = isset($issue_priority_definition[$priority]) ? $issue_priority_definition[$priority]['label'] : $priority;
 
   $issue_settings = array();
   $issue_settings['title'] = $form['title']->getValue();
   $issue_settings['tags'] = drush_get_option('tags', $tags);
   $issue_settings['status'] = drush_get_option('issue_status', $status_label);
+  $issue_settings['priority'] = drush_get_option('issue_priority', $priority_label);
 
   if ($content = drush_get_option('message')) {
     $issue_settings['content'] = $content;
@@ -114,8 +121,8 @@ function drush_drush_ddoto_post_comment($nid) {
     $temp_file = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files, $issue_settings));
 
     $exec = drush_get_editor();
-    $hshell = drush_shell_exec_interactive($exec, $temp_file);
-    if ($hshell) {
+    $shell = drush_shell_exec_interactive($exec, $temp_file);
+    if ($shell) {
       $content = file_get_contents($temp_file);
       $file_info = _drush_ddoto_parse_file($content);
       $content = _drush_ddoto_valid_lines($content);
@@ -134,6 +141,9 @@ function drush_drush_ddoto_post_comment($nid) {
       if (isset($file_info['status'])) {
         $issue_settings['status'] = $file_info['status'];
       }
+      if (isset($file_info['priority'])) {
+        $issue_settings['priority'] = $file_info['priority'];
+      }
     }
   }
 
@@ -143,7 +153,8 @@ function drush_drush_ddoto_post_comment($nid) {
   }
 
   // Convert status value to integer.
-  $issue_settings['status'] = IssueStatus::toInteger($issue_settings['status']);
+  $issue_settings['status'] = IssueStatus::toValue($issue_settings['status']);
+  $issue_settings['priority'] = IssuePriority::toValue($issue_settings['priority']);
 
   $client->postComment($nid, $content, $attachments, $issue_settings);
 }
@@ -170,6 +181,14 @@ function  _drush_ddoto_file_template($nid, $files, $issue_settings = array()) {
     $output[] = '#';
     $output[] = '# Status: ' . $issue_settings['status'];
     foreach (IssueStatus::getDefinition() as $definition) {
+      $output[] = '#  - ' . $definition['label'] . ' - ' . implode(', ', $definition['aliases']);
+    }
+  }
+
+  if (isset($issue_settings['priority'])) {
+    $output[] = '#';
+    $output[] = '# Priority: ' . $issue_settings['priority'];
+    foreach (IssuePriority::getDefinition() as $definition) {
       $output[] = '#  - ' . $definition['label'] . ' - ' . implode(', ', $definition['aliases']);
     }
   }
@@ -204,6 +223,11 @@ function _drush_ddoto_parse_file($content) {
       $status = trim(str_replace('# Status: ', '', $line));
 
       $file_info['status'] = $status;
+    }
+    if (strpos($line, '# Priority:') === 0) {
+      $priority = trim(str_replace('# Priority: ', '', $line));
+
+      $file_info['priority'] = $priority;
     }
   }
 
