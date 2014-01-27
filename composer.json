@@ -10,10 +10,6 @@
         {
           "type": "vcs",
           "url": "https://github.com/webflo/github_drupalorg.git"
-        },
-        {
-          "type": "vcs",
-          "url": "https://github.com/dawehner/DomCrawler.git"
         }
     ],
     "require": {
