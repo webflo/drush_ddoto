@@ -101,17 +101,25 @@ function drush_drush_ddoto_post_comment($nid) {
 
   // Setup tags.
   $form = $client->getForm($nid);
-  $tags = $form['taxonomy_vocabulary_9[und]']->getValue();
-  $status = $form['field_issue_status[und]']->getValue();
-  $status_label = isset($issue_status_definition[$status]) ? $issue_status_definition[$status]['label'] : $status;
-  $priority = $form['field_issue_priority[und]']->getValue();
-  $priority_label = isset($issue_priority_definition[$priority]) ? $issue_priority_definition[$priority]['label'] : $priority;
+  $issue_settings['tags'] = $form['taxonomy_vocabulary_9[und]']->getValue();
+  $issue_settings['status'] = $form['field_issue_status[und]']->getValue();
+  $issue_settings['priority'] = $form['field_issue_priority[und]']->getValue();
 
   $issue_settings = array();
   $issue_settings['title'] = $form['title']->getValue();
-  $issue_settings['tags'] = drush_get_option('tags', $tags);
-  $issue_settings['status'] = drush_get_option('issue_status', $status_label);
-  $issue_settings['priority'] = drush_get_option('issue_priority', $priority_label);
+  $issue_settings['tags'] = drush_get_option('tags', $issue_settings['tags']);
+  $issue_settings['status'] = drush_get_option('issue_status', $issue_settings['status']);
+  $issue_settings['priority'] = drush_get_option('issue_priority', $issue_settings['priority']);
+
+  if ($files) {
+    // Set the issue to "needs review" if it is not already "needs review" or RTBC.
+    if ($issue_settings['status'] != IssueStatus::RTBC) {
+      $issue_settings['status'] = IssueStatus::NEEDS_REVIEW;
+    }
+  }
+
+  $issue_settings['status'] = isset($issue_status_definition[$issue_settings['status']]) ? $issue_status_definition[$issue_settings['status']]['label'] : $issue_settings['status'];
+  $issue_settings['priority'] = isset($issue_priority_definition[$issue_settings['priority']]) ? $issue_priority_definition[$issue_settings['priority']]['label'] : $issue_settings['priority'];
 
   if ($content = drush_get_option('message')) {
     $issue_settings['content'] = $content;
