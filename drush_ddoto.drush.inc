@@ -101,12 +101,14 @@ function drush_drush_ddoto_post_comment($nid) {
 
   // Setup tags.
   $form = $client->getForm($nid);
+  $issue_settings['title'] = $form['title']->getValue();
+
+  // Extract issue settings from edit form.
   $issue_settings['tags'] = $form['taxonomy_vocabulary_9[und]']->getValue();
   $issue_settings['status'] = $form['field_issue_status[und]']->getValue();
   $issue_settings['priority'] = $form['field_issue_priority[und]']->getValue();
 
-  $issue_settings = array();
-  $issue_settings['title'] = $form['title']->getValue();
+  // Override issue settings with cli options.
   $issue_settings['tags'] = drush_get_option('tags', $issue_settings['tags']);
   $issue_settings['status'] = drush_get_option('issue_status', $issue_settings['status']);
   $issue_settings['priority'] = drush_get_option('issue_priority', $issue_settings['priority']);
