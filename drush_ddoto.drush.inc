@@ -91,6 +91,12 @@ function drush_drush_ddoto_drupal_org_login() {
  */
 function drush_drush_ddoto_post_comment($nid) {
   global $drupal_user;
+  $interactive = TRUE;
+
+  if ($content = drush_get_option('message')) {
+    $interactive = FALSE;
+    $issue_settings['content'] = drush_get_option('message');
+  }
 
   $client = new \Drupal\github_drupalorg\Client($drupal_user);
   $issue_status_definition = IssueStatus::getDefinition();
@@ -103,7 +109,7 @@ function drush_drush_ddoto_post_comment($nid) {
   array_shift($args);
   $files = $args;
 
-  // Setup tags.
+  // Fetch issue form.
   $form = $client->getForm($nid);
   $issue_settings['title'] = $form['title']->getValue();
 
@@ -112,25 +118,24 @@ function drush_drush_ddoto_post_comment($nid) {
   $issue_settings['status'] = $form['field_issue_status[und]']->getValue();
   $issue_settings['priority'] = $form['field_issue_priority[und]']->getValue();
 
-  // Override issue settings with cli options.
-  $issue_settings['tags'] = drush_get_option('tags', $issue_settings['tags']);
-  $issue_settings['status'] = drush_get_option('issue_status', $issue_settings['status']);
-  $issue_settings['priority'] = drush_get_option('issue_priority', $issue_settings['priority']);
-
-  if ($files) {
+  // Sane default for comments with file attachments.
+  if ($interactive && $files) {
     // Set the issue to "needs review" if it is not already "needs review" or RTBC.
     if ($issue_settings['status'] != IssueStatus::RTBC) {
       $issue_settings['status'] = IssueStatus::NEEDS_REVIEW;
     }
   }
 
+  // Override issue settings with cli options.
+  $issue_settings['tags'] = drush_get_option('tags', $issue_settings['tags']);
+  $issue_settings['status'] = drush_get_option('issue_status', $issue_settings['status']);
+  $issue_settings['priority'] = drush_get_option('issue_priority', $issue_settings['priority']);
+
+  // Generate proper labels for status and priority.
   $issue_settings['status'] = isset($issue_status_definition[$issue_settings['status']]) ? $issue_status_definition[$issue_settings['status']]['label'] : $issue_settings['status'];
   $issue_settings['priority'] = isset($issue_priority_definition[$issue_settings['priority']]) ? $issue_priority_definition[$issue_settings['priority']]['label'] : $issue_settings['priority'];
 
-  if ($content = drush_get_option('message')) {
-    $issue_settings['content'] = $content;
-  }
-  else {
+  if ($interactive) {
     // Create tmp file
     $temp_file = drush_save_data_to_temp_file(_drush_ddoto_file_template($nid, $files, $issue_settings));
 
