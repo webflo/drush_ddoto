@@ -14,10 +14,10 @@ require_once __DIR__ . '/settings.php';
  */
 function drush_ddoto_drush_command() {
   $items['post-comment'] = array(
-    'description' => 'Post comment on drupal.org',
+    'description' => 'Post a comment on drupal.org',
     'options' => array(
       'issue_status' => array(
-        'description' => 'Sets the issue status, like needs review (8), needs RTBC (14)',
+        'description' => 'Sets the issue status, such as needs review (8) or RTBC (14)',
         'example-value' => '14',
       ),
       'message' => array(
@@ -41,7 +41,8 @@ function drush_ddoto_drush_command() {
   );
 
   $items['drupal-org-login'] = array(
-    'description' => 'Login-in on Drupal.org with',
+    'description' => 'Login to Drupal.org with the username specified in settings.php.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   return $items;
@@ -50,7 +51,9 @@ function drush_ddoto_drush_command() {
 /**
  * Extract issue id.
  *
- * @param $nid
+ * @param mixed $nid
+ *
+ * @return int
  */
 function _drush_ddoto_extract_issue_id($nid) {
   preg_match('/[0-9]+/', $nid, $matches);
@@ -78,8 +81,9 @@ function drush_drush_ddoto_post_comment_validate($nid = NULL) {
 function drush_drush_ddoto_drupal_org_login() {
   global $drupal_user;
   global $drupal_password;
+
   $client = new \Drupal\github_drupalorg\Client($drupal_user);
-  $client->login($drupal_password);
+  $client->login((string) $drupal_password);
 }
 
 /**
