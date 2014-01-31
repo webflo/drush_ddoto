@@ -95,7 +95,7 @@ function drush_drush_ddoto_post_comment($nid) {
 
   if ($content = drush_get_option('message')) {
     $interactive = FALSE;
-    $issue_settings['content'] = drush_get_option('message');
+    $issue_settings['content'] = $content;
   }
 
   $client = new \Drupal\github_drupalorg\Client($drupal_user);
@@ -119,7 +119,7 @@ function drush_drush_ddoto_post_comment($nid) {
   $issue_settings['priority'] = $form['field_issue_priority[und]']->getValue();
 
   // Sane default for comments with file attachments.
-  if ($interactive && $files) {
+  if ($files && !drush_get_option('issue_status')) {
     // Set the issue to "needs review" if it is not already "needs review" or RTBC.
     if ($issue_settings['status'] != IssueStatus::RTBC) {
       $issue_settings['status'] = IssueStatus::NEEDS_REVIEW;
