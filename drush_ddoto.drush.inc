@@ -43,6 +43,10 @@ function drush_ddoto_drush_command() {
   $items['drupal-org-login'] = array(
     'description' => 'Login to Drupal.org with the username specified in settings.php.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'aliases' => array(
+      'do-login',
+      'dol',
+    ),
   );
 
   return $items;
