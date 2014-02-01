@@ -114,7 +114,18 @@ function drush_drush_ddoto_post_comment($nid) {
   $files = $args;
 
   // Fetch issue form.
-  $form = $client->getForm($nid);
+  try {
+    $form = $client->getForm($nid);
+  }
+  catch (\Exception $e) {
+    if ($e->getCode() == 403) {
+      drush_log($e->getMessage() . ' You probably want to login to drupal org using the drupal-org-login command.', 'error');
+      return;
+    }
+    else {
+      throw $e;
+    }
+  }
   $issue_settings['title'] = $form['title']->getValue();
 
   // Extract issue settings from edit form.
